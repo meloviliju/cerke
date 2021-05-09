@@ -234,10 +234,10 @@ function init_yhuap() {
     }
     console.log("init yhuap");
 }
-function init_sip() {
+function init_sia() {
     generateBlackSaup();
     generateRedSaup();
-    const piece_id_differing_in_sip = [
+    const piece_id_differing_in_sia = [
         0, 1, 2, 3, 7, 8,
         9, 10, 11, 12, 13, 14,
         15, 17, 21, 23,
@@ -265,8 +265,8 @@ function init_sip() {
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         piece_counts[pieces[i]].count = 0;
     }
-    for (let i = 0; i < piece_id_differing_in_sip.length; i++) {
-        const id = piece_id_differing_in_sip[i];
+    for (let i = 0; i < piece_id_differing_in_sia.length; i++) {
+        const id = piece_id_differing_in_sia[i];
         const dest = differing_pieces_dest[i];
         if (dest === "unused") {
             sendToRest(id);
@@ -277,7 +277,7 @@ function init_sip() {
             document.getElementById(differing_pieces_dest[i]).appendChild(piece);
         }
     }
-    console.log("init sip");
+    console.log("init sia");
 }
 function cancelChoice() {
     choice.value = null;
