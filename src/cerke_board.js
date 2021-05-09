@@ -219,7 +219,7 @@ function ciurl() {
     }
     alert(rand);
 }
-function init() {
+function init_yhuap() {
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         const piece = document.getElementById(`${i}`);
         piece.parentNode.removeChild(piece);
@@ -232,7 +232,52 @@ function init() {
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         piece_counts[pieces[i]].count = 0;
     }
-    console.log("init");
+    console.log("init yhuap");
+}
+function init_sip() {
+    generateBlackSaup();
+    generateRedSaup();
+    const piece_id_differing_in_sip = [
+        0, 1, 2, 3, 7, 8,
+        9, 10, 11, 12, 13, 14,
+        15, 17, 21, 23,
+        24,
+        26, 28, 30, 32,
+        34, 35, 36, 37, 38, 39,
+        40, 41, 42, 43, 47, 48,
+        56, 57, 58, 59
+    ];
+    const differing_pieces_dest = [
+        "unused", "unused", "NIA", "TIA", "unused", "unused",
+        "unused", "KA", "unused", "unused", "KIA", "unused",
+        "LAI", "TAI", "XAI", "MAI",
+        "unused",
+        "KI", "NI", "CI", "PI",
+        "unused", "PIA", "unused", "unused", "PA", "unused",
+        "unused", "unused", "NA", "TA", "unused", "unused",
+        "LIA", "MIA", "LA", "MA"
+    ];
+    for (let i = 0; i < initial_coord_yhuap.length; i++) {
+        const piece = getNth(i);
+        piece.parentNode.removeChild(piece);
+        document.getElementById(initial_coord_yhuap[i]).appendChild(piece);
+    }
+    for (let i = 0; i < initial_coord_yhuap.length; i++) {
+        piece_counts[pieces[i]].count = 0;
+    }
+    for (let i = 0; i < piece_id_differing_in_sip.length; i++) {
+        const id = piece_id_differing_in_sip[i];
+        const dest = differing_pieces_dest[i];
+        if (dest === "unused") {
+            sendToRest(id);
+        }
+        else {
+            const piece = getNth(id);
+            piece.parentNode.removeChild(piece);
+            document.getElementById(differing_pieces_dest[i]).appendChild(piece);
+        }
+    }
+    console.log("init sip");
 }
 function cancelChoice() {
     choice.value = null;
