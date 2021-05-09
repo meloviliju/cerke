@@ -8,7 +8,7 @@ type PieceImgName = "bkua" | "bmaun" | "bkaun" | "buai" | "rio" | "ruai" | "rkau
     "btuk" | "bgua" | "bdau" | "rdau" | "rgua" | "rtuk" |
     "rkua" | "rmaun" | "rkaun" | "ruai" | "bio" | "buai" | "bkaun" | "bmaun" | "bkua" |
     "rtam" | "bmun" | "bmun" | "bmun" | "rmun" | "rmun" | "rmun" |
-    "bsaup" | "bsaup" | "rsaup" | "rsaup";
+    "bsaup" | "bsaup" | "rsaup" | "rsaup" | "bhia" | "bhia" | "rhia" | "rhia";
 
 const initial_coord_yhuap = [
     "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
@@ -28,7 +28,7 @@ const pieces: ReadonlyArray<PieceImgName> = [
     "btuk", "bgua", "bdau", "rdau", "rgua", "rtuk",
     "rkua", "rmaun", "rkaun", "ruai", "bio", "buai", "bkaun", "bmaun", "bkua",
     "rtam", "bmun", "bmun", "bmun", "rmun", "rmun", "rmun",
-    "bsaup", "bsaup", "rsaup", "rsaup"
+    "bsaup", "bsaup", "rsaup", "rsaup", "bhia", "bhia", "rhia", "rhia"
 ];
 
 const piece_names: ReadonlyArray<PieceImgName> = [
@@ -44,7 +44,8 @@ const piece_names: ReadonlyArray<PieceImgName> = [
     "bio", "rio",
     "btam", "rtam",
     "bmun", "rmun",
-    "bsaup", "rsaup"
+    "bsaup", "rsaup",
+    "bhia", "rhia"
 ];
 
 class Choice {
@@ -133,6 +134,8 @@ const piece_counts: { [P in PieceImgName]: Count } = {
     rmun: new Count("rmun"),
     bsaup: new Count("bsaup"),
     rsaup: new Count("rsaup"),
+    bhia: new Count("bhia"),
+    rhia: new Count("rhia"),
 };
 
 type ChoiceInnerHTMLType = string;
@@ -340,6 +343,11 @@ document.getElementById("saup_checkbox").addEventListener("change", () => {
     else { drainBlackSaup(); drainRedSaup(); }
 })
 
+document.getElementById("hia_checkbox").addEventListener("change", () => {
+    if ((document.getElementById("hia_checkbox") as HTMLInputElement).checked) { generateBlackHia(); generateRedHia(); }
+    else { drainBlackHia(); drainRedHia(); }
+})
+
 
 // load rest
 for (let i = 0; i < piece_names.length; i++) {
@@ -438,4 +446,17 @@ function drainBlackSaup() {
 function drainRedSaup() {
     sendToRest(58); sendToRest(59);
     drainPieceCell(25);
+}
+
+// hia
+function generateBlackHia() { fillPieceCell(26); }
+function generateRedHia() { fillPieceCell(27); }
+
+function drainBlackHia() {
+    sendToRest(60); sendToRest(61);
+    drainPieceCell(26);
+}
+function drainRedHia() {
+    sendToRest(62); sendToRest(63);
+    drainPieceCell(27);
 }

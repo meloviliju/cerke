@@ -17,7 +17,7 @@ const pieces = [
     "btuk", "bgua", "bdau", "rdau", "rgua", "rtuk",
     "rkua", "rmaun", "rkaun", "ruai", "bio", "buai", "bkaun", "bmaun", "bkua",
     "rtam", "bmun", "bmun", "bmun", "rmun", "rmun", "rmun",
-    "bsaup", "bsaup", "rsaup", "rsaup"
+    "bsaup", "bsaup", "rsaup", "rsaup", "bhia", "bhia", "rhia", "rhia"
 ];
 const piece_names = [
     "bnuak", "rnuak",
@@ -32,7 +32,8 @@ const piece_names = [
     "bio", "rio",
     "btam", "rtam",
     "bmun", "rmun",
-    "bsaup", "rsaup"
+    "bsaup", "rsaup",
+    "bhia", "rhia"
 ];
 class Choice {
     constructor() {
@@ -118,6 +119,8 @@ const piece_counts = {
     rmun: new Count("rmun"),
     bsaup: new Count("bsaup"),
     rsaup: new Count("rsaup"),
+    bhia: new Count("bhia"),
+    rhia: new Count("rhia"),
 };
 // move the choice(=piece) to td(=grid)
 function move(td) {
@@ -333,6 +336,16 @@ document.getElementById("saup_checkbox").addEventListener("change", () => {
         drainRedSaup();
     }
 });
+document.getElementById("hia_checkbox").addEventListener("change", () => {
+    if (document.getElementById("hia_checkbox").checked) {
+        generateBlackHia();
+        generateRedHia();
+    }
+    else {
+        drainBlackHia();
+        drainRedHia();
+    }
+});
 // load rest
 for (let i = 0; i < piece_names.length; i++) {
     const rest = document.getElementById("rest");
@@ -428,4 +441,17 @@ function drainRedSaup() {
     sendToRest(58);
     sendToRest(59);
     drainPieceCell(25);
+}
+// hia
+function generateBlackHia() { fillPieceCell(26); }
+function generateRedHia() { fillPieceCell(27); }
+function drainBlackHia() {
+    sendToRest(60);
+    sendToRest(61);
+    drainPieceCell(26);
+}
+function drainRedHia() {
+    sendToRest(62);
+    sendToRest(63);
+    drainPieceCell(27);
 }
