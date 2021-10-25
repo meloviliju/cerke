@@ -4,4 +4,4 @@ Twitter: [@cet2kaik](https://twitter.com/cet2kaik)
 More: [こちら](http://sozysozbot.github.io/cerke)
 
 ## 作ったもの
-* [机戦盤](http://schwert398.github.io/cerke/cerke_board)
+* [机戦盤](http://meloviliju.github.io/cerke/cerke_board)
