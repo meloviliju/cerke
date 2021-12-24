@@ -19,6 +19,7 @@ const initial_coord_yhuap = [
     "KAU", "LAU", "TAU", "XAU", "MAU", "PAU",
     "KIA", "LIA", "NIA", "TIA", "ZIA", "XIA", "CIA", "MIA", "PIA",
 ];
+
 const pieces: ReadonlyArray<PieceImgName> = [
     "bkua", "bmaun", "bkaun", "buai", "rio", "ruai", "rkaun", "rmaun", "rkua",
     "rtuk", "rgua", "rdau", "bdau", "bgua", "btuk",
@@ -141,7 +142,7 @@ const piece_counts: { [P in PieceImgName]: Count } = {
 type ChoiceInnerHTMLType = string;
 
 // move the choice(=piece) to td(=grid)
-function move(td: HTMLTableDataCellElement) {
+function move(td: HTMLTableCellElement) {
     const piece = choice.piece_element();
     piece.parentNode.removeChild(piece);
     td.appendChild(piece);
@@ -255,24 +256,24 @@ function init_sia() {
     generateBlackSaup();
     generateRedSaup();
     const piece_id_differing_in_sia = [
-        0, 1, 2, 3, 7, 8, 
-        9, 10, 11, 12, 13, 14, 
+        0, 1, 2, 3, 7, 8,
+        9, 10, 11, 12, 13, 14,
         15, 17, 21, 23,
         24,
         26, 28, 30, 32,
-        34, 35, 36, 37, 38, 39, 
+        34, 35, 36, 37, 38, 39,
         40, 41, 42, 43, 47, 48,
         56, 57, 58, 59
     ];
     const differing_pieces_dest = [
-        "unused", "unused", "NIA", "TIA", "unused", "unused", 
-        "unused", "KA", "unused", "unused", "KIA", "unused", 
-        "LAI", "TAI", "XAI", "MAI", 
-        "unused", 
-        "KI", "NI", "CI", "PI", 
+        "unused", "unused", "NIA", "TIA", "unused", "unused",
+        "unused", "KA", "unused", "unused", "KIA", "unused",
+        "LAI", "TAI", "XAI", "MAI",
+        "unused",
+        "KI", "NI", "CI", "PI",
         "unused", "PIA", "unused", "unused", "PA", "unused",
-        "unused", "unused", "NA", "TA", "unused", "unused", 
-        "LIA", "MIA", "LA", "MA" 
+        "unused", "unused", "NA", "TA", "unused", "unused",
+        "LIA", "MIA", "LA", "MA"
     ]
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         const piece = getNth(i);
@@ -282,10 +283,10 @@ function init_sia() {
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         piece_counts[pieces[i]].count = 0;
     }
-    for (let i = 0; i < piece_id_differing_in_sia.length; i++){
+    for (let i = 0; i < piece_id_differing_in_sia.length; i++) {
         const id = piece_id_differing_in_sia[i];
         const dest = differing_pieces_dest[i];
-        if (dest === "unused"){
+        if (dest === "unused") {
             sendToRest(id);
         } else {
             const piece = getNth(id);
@@ -303,140 +304,159 @@ function cancelChoice() {
 type Column = "K" | "L" | "N" | "T" | "Z" | "X" | "C" | "M" | "P";
 type Row = "A" | "E" | "I" | "U" | "O" | "Y" | "AI" | "AU" | "IA";
 
-// load board
-const column: ReadonlyArray<Column> = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
-const row: ReadonlyArray<Row> = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
-const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
-const tarfe = ["NI", "CI", "TU", "XU", "TY", "XY", "NAI", "CAI"];
+function setup() { setupMaterials(); setupConsole(); }
 
-for (let i = 0; i < row.length; i++) {
+function setupMaterials() { loadBoard(); loadRestArea(); loadPieces(); loadPieceList(); }
+function setupConsole() { setButtonFunction(); setCheckboxFuntion(); }
+
+function loadBoard() {
+    const column: ReadonlyArray<Column> = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
+    const row: ReadonlyArray<Row> = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
+    const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
+    const tarfe = ["NI", "CI", "TU", "XU", "TY", "XY", "NAI", "CAI"];
     const table = document.getElementById("board") as HTMLTableElement;
-    const newtr = table.insertRow(-1);
-    for (let j = 0; j < column.length; j++) {
-        const newtd: HTMLTableDataCellElement = newtr.insertCell(-1);
-        const newid = `${column[j]}${row[i]}`;
 
-        newtd.id = newid;
-        newtd.classList.add("cell");
-        if (tarfe.includes(newid)) {
-            newtd.classList.add("tarfe");
-        } else if (tanna.includes(newid)) {
-            newtd.classList.add("tanna");
-        } else if (newid === "ZO") {
-            newtd.classList.add("tanzo");
-        }
+    for (let i = 0; i < row.length; i++) {
+        const newtr = table.insertRow(-1);
+        for (let j = 0; j < column.length; j++) {
+            const newtd: HTMLTableCellElement = newtr.insertCell(-1);
+            const newid = `${column[j]}${row[i]}`;
 
-        newtd.addEventListener("click", (event) => {
-            if ((event.target as HTMLElement).tagName !== "IMG" && choice.value !== null) {
-                if (typeof choice.value === "string") {
-                    const piece = choice.piece_element().firstChild;
-                    if (null == piece) { console.log("NPE"); return; }
-
-                    piece.parentNode.removeChild(piece);
-                    newtd.appendChild(piece);
-                    piece_counts[choice.value].count -= 1;
-                    choice.value = null;
-                    console.log("spawn");
-
-                } else move(newtd);
+            newtd.id = newid;
+            newtd.classList.add("cell");
+            if (tarfe.includes(newid)) {
+                newtd.classList.add("tarfe");
+            } else if (tanna.includes(newid)) {
+                newtd.classList.add("tanna");
+            } else if (newid === "ZO") {
+                newtd.classList.add("tanzo");
             }
+
+            newtd.addEventListener("click", (event) => {
+                if ((event.target as HTMLElement).tagName !== "IMG" && choice.value !== null) {
+                    if (typeof choice.value === "string") {
+                        const piece = choice.piece_element().firstChild;
+                        if (null == piece) { console.log("NPE"); return; }
+
+                        piece.parentNode.removeChild(piece);
+                        newtd.appendChild(piece);
+                        piece_counts[choice.value].count -= 1;
+                        choice.value = null;
+                        console.log("spawn");
+
+                    } else move(newtd);
+                }
+            });
+        }
+        const newtd = newtr.insertCell(-1);
+        newtd.classList.add("coordinate");
+        newtd.innerHTML = `<b>${row[i]}</b>`;
+    }
+    const newtr = table.insertRow(-1);
+    for (let k = 0; k < column.length + 1; k++) {
+        const newtd = newtr.insertCell(-1);
+        newtd.classList.add("coordinate");
+        newtd.innerHTML = k < column.length ? `<b>${column[k]}</b>` : "";
+    }
+}
+
+function loadRestArea() {
+    for (let i = 0; i < piece_names.length; i++) {
+        const rest = document.getElementById("rest");
+        const newdiv = document.createElement("div");
+        rest.appendChild(newdiv);
+        newdiv.id = piece_names[i];
+    }
+}
+
+function loadPieces() {
+    for (let i = 0; i < pieces.length; i++) {
+        const newimg = document.createElement("img");
+        document.getElementById(pieces[i]).appendChild(newimg);
+        newimg.className = "piece";
+        newimg.id = `${i}`;
+        newimg.src = `./pieces/${pieces[i]}.png`;
+        newimg.addEventListener("click", () => {
+            if (choice.value !== null) gain(i);
+            else choice.value = i;
         });
     }
 }
 
-// set console function
-// button
-document.getElementById("send_to_red").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "string") {
-            spawnToRed(choice.value);
-        } else sendToRed(choice.value);
-    }
-});
-
-document.getElementById("send_to_black").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "string") {
-            spawnToBlack(choice.value);
-        } else sendToBlack(choice.value);
-    }
-});
-
-document.getElementById("send_to_rest").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "number") {
-            sendToRest(choice.value);
-        } else {
-            console.log("called in vain");
+function loadPieceList() {
+    for (let i = 0; i < 4; i++) {
+        const tr_img = document.getElementById(`pl${i}`);
+        const tr_num = document.getElementById(`pl${i + 4}`);
+        for (let j = 0; j < 7; j++) {
+            const num = i * 7 + j;
+            // fill blank cells
+            const newtd_img = document.createElement("td");
+            tr_img.appendChild(newtd_img);
+            newtd_img.id = `${piece_names[num]}_img`;
+            newtd_img.className = "piece_img";
+            const newtd_num = document.createElement("td");
+            tr_num.appendChild(newtd_num);
+            newtd_num.id = `${piece_names[num]}_num`;
+            newtd_num.className = "piece_num";
+            if (num < 21) fillPieceCell(num);
         }
-    }
-});
-
-// checkbox
-document.getElementById("red_tam_checkbox").addEventListener("change", () => {
-    if ((document.getElementById("red_tam_checkbox") as HTMLInputElement).checked) generateRedTam();
-    else drainRedTam();
-})
-
-document.getElementById("mun_checkbox").addEventListener("change", () => {
-    if ((document.getElementById("mun_checkbox") as HTMLInputElement).checked) { generateBlackMun(); generateRedMun(); }
-    else { drainBlackMun(); drainRedMun(); }
-})
-
-document.getElementById("saup_checkbox").addEventListener("change", () => {
-    if ((document.getElementById("saup_checkbox") as HTMLInputElement).checked) { generateBlackSaup(); generateRedSaup(); }
-    else { drainBlackSaup(); drainRedSaup(); }
-})
-
-document.getElementById("hia_checkbox").addEventListener("change", () => {
-    if ((document.getElementById("hia_checkbox") as HTMLInputElement).checked) { generateBlackHia(); generateRedHia(); }
-    else { drainBlackHia(); drainRedHia(); }
-})
-
-
-// load rest
-for (let i = 0; i < piece_names.length; i++) {
-    const rest = document.getElementById("rest");
-    const newdiv = document.createElement("div");
-    rest.appendChild(newdiv);
-    newdiv.id = piece_names[i];
+    }    
 }
 
-// load pieces
-for (let i = 0; i < pieces.length; i++) {
-    const newimg = document.createElement("img");
-    document.getElementById(pieces[i]).appendChild(newimg);
-    newimg.className = "piece";
-    newimg.id = `${i}`;
-    newimg.src = `./pieces/${pieces[i]}.png`;
-    newimg.addEventListener("click", () => {
-        if (choice.value !== null) gain(i);
-        else choice.value = i;
+function setButtonFunction() {
+    document.getElementById("send_to_red").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "string") {
+                spawnToRed(choice.value);
+            } else sendToRed(choice.value);
+        }
+    });
+
+    document.getElementById("send_to_black").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "string") {
+                spawnToBlack(choice.value);
+            } else sendToBlack(choice.value);
+        }
+    });
+
+    document.getElementById("send_to_rest").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "number") {
+                sendToRest(choice.value);
+            } else {
+                console.log("called in vain");
+            }
+        }
     });
 }
 
-// load piece list
-const piece_list = document.getElementById("piece_list");
-for (let i = 0; i < 4; i++) {
-    const tr_img = document.getElementById(`pl${i}`);
-    const tr_num = document.getElementById(`pl${i + 4}`);
-    for (let j = 0; j < 7; j++) {
-        const num = i * 7 + j;
-        // fill blank cells
-        const newtd_img = document.createElement("td");
-        tr_img.appendChild(newtd_img);
-        newtd_img.id = `${piece_names[num]}_img`;
-        newtd_img.className = "piece_img";
-        const newtd_num = document.createElement("td");
-        tr_num.appendChild(newtd_num);
-        newtd_num.id = `${piece_names[num]}_num`;
-        newtd_num.className = "piece_num";//*/
-        if (num < 21) fillPieceCell(num);
-    }
+function setCheckboxFuntion() {
+    document.getElementById("red_tam_checkbox").addEventListener("change", () => {
+        if ((document.getElementById("red_tam_checkbox") as HTMLInputElement).checked) generateRedTam();
+        else drainRedTam();
+    });
+
+    document.getElementById("mun_checkbox").addEventListener("change", () => {
+        if ((document.getElementById("mun_checkbox") as HTMLInputElement).checked) { generateBlackMun(); generateRedMun(); }
+        else { drainBlackMun(); drainRedMun(); }
+    });
+
+    document.getElementById("saup_checkbox").addEventListener("change", () => {
+        if ((document.getElementById("saup_checkbox") as HTMLInputElement).checked) { generateBlackSaup(); generateRedSaup(); }
+        else { drainBlackSaup(); drainRedSaup(); }
+    });
+
+    document.getElementById("hia_checkbox").addEventListener("change", () => {
+        if ((document.getElementById("hia_checkbox") as HTMLInputElement).checked) { generateBlackHia(); generateRedHia(); }
+        else { drainBlackHia(); drainRedHia(); }
+    });
 }
 
-function fillPieceCell(num: number) {
-    // load img cells
+function fillPieceCell(num: number) { loadPieceImgCell(num); loadPieceNumCell(num); }
+function drainPieceCell(num: number) { drainPieceImgCell(num); drainPieceNumCell(num); }
+
+function loadPieceImgCell(num: number) {
     const td_img = document.getElementById(`${piece_names[num]}_img`);
 
     const inner_img = document.createElement("img");
@@ -449,16 +469,18 @@ function fillPieceCell(num: number) {
     });
     td_img.innerHTML = "";
     td_img.appendChild(inner_img);
+}
 
-    // load num cells
+function loadPieceNumCell(num: number) {
     piece_counts[piece_names[num]].count = document.getElementById(piece_names[num]).children.length;
 }
 
-function drainPieceCell(num: number) {
-    // drain img cells
+function drainPieceImgCell(num: number) {
     const td_img = document.getElementById(`${piece_names[num]}_img`);
     td_img.innerHTML = "";
-    // drain num cells
+}
+
+function drainPieceNumCell(num: number) {
     const td_num = document.getElementById(`${piece_names[num]}_num`);
     td_num.innerHTML = "";
 }

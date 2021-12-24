@@ -108,6 +108,11 @@ table{
     background-color: #536b53;
 }
 
+.coordinate {
+    padding: 1px 5px;
+    text-align: center;
+}
+
 .blinking {
     margin: -5px;
     border: 5px solid #9ae2ff;

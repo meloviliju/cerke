@@ -282,158 +282,175 @@ function init_sia() {
 function cancelChoice() {
     choice.value = null;
 }
-// load board
-const column = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
-const row = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
-const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
-const tarfe = ["NI", "CI", "TU", "XU", "TY", "XY", "NAI", "CAI"];
-for (let i = 0; i < row.length; i++) {
+function setup() { setupMaterials(); setupConsole(); }
+function setupMaterials() { loadBoard(); loadRestArea(); loadPieces(); loadPieceList(); }
+function setupConsole() { setButtonFunction(); setCheckboxFuntion(); }
+function loadBoard() {
+    const column = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
+    const row = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
+    const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
+    const tarfe = ["NI", "CI", "TU", "XU", "TY", "XY", "NAI", "CAI"];
     const table = document.getElementById("board");
-    const newtr = table.insertRow(-1);
-    for (let j = 0; j < column.length; j++) {
-        const newtd = newtr.insertCell(-1);
-        const newid = `${column[j]}${row[i]}`;
-        newtd.id = newid;
-        newtd.classList.add("cell");
-        if (tarfe.includes(newid)) {
-            newtd.classList.add("tarfe");
-        }
-        else if (tanna.includes(newid)) {
-            newtd.classList.add("tanna");
-        }
-        else if (newid === "ZO") {
-            newtd.classList.add("tanzo");
-        }
-        newtd.addEventListener("click", (event) => {
-            if (event.target.tagName !== "IMG" && choice.value !== null) {
-                if (typeof choice.value === "string") {
-                    const piece = choice.piece_element().firstChild;
-                    if (null == piece) {
-                        console.log("NPE");
-                        return;
-                    }
-                    piece.parentNode.removeChild(piece);
-                    newtd.appendChild(piece);
-                    piece_counts[choice.value].count -= 1;
-                    choice.value = null;
-                    console.log("spawn");
-                }
-                else
-                    move(newtd);
+    for (let i = 0; i < row.length; i++) {
+        const newtr = table.insertRow(-1);
+        for (let j = 0; j < column.length; j++) {
+            const newtd = newtr.insertCell(-1);
+            const newid = `${column[j]}${row[i]}`;
+            newtd.id = newid;
+            newtd.classList.add("cell");
+            if (tarfe.includes(newid)) {
+                newtd.classList.add("tarfe");
             }
+            else if (tanna.includes(newid)) {
+                newtd.classList.add("tanna");
+            }
+            else if (newid === "ZO") {
+                newtd.classList.add("tanzo");
+            }
+            newtd.addEventListener("click", (event) => {
+                if (event.target.tagName !== "IMG" && choice.value !== null) {
+                    if (typeof choice.value === "string") {
+                        const piece = choice.piece_element().firstChild;
+                        if (null == piece) {
+                            console.log("NPE");
+                            return;
+                        }
+                        piece.parentNode.removeChild(piece);
+                        newtd.appendChild(piece);
+                        piece_counts[choice.value].count -= 1;
+                        choice.value = null;
+                        console.log("spawn");
+                    }
+                    else
+                        move(newtd);
+                }
+            });
+        }
+        const newtd = newtr.insertCell(-1);
+        newtd.classList.add("coordinate");
+        newtd.innerHTML = `<b>${row[i]}</b>`;
+    }
+    const newtr = table.insertRow(-1);
+    for (let k = 0; k < column.length + 1; k++) {
+        const newtd = newtr.insertCell(-1);
+        newtd.classList.add("coordinate");
+        newtd.innerHTML = k < column.length ? `<b>${column[k]}</b>` : "";
+    }
+}
+function loadRestArea() {
+    for (let i = 0; i < piece_names.length; i++) {
+        const rest = document.getElementById("rest");
+        const newdiv = document.createElement("div");
+        rest.appendChild(newdiv);
+        newdiv.id = piece_names[i];
+    }
+}
+function loadPieces() {
+    for (let i = 0; i < pieces.length; i++) {
+        const newimg = document.createElement("img");
+        document.getElementById(pieces[i]).appendChild(newimg);
+        newimg.className = "piece";
+        newimg.id = `${i}`;
+        newimg.src = `./pieces/${pieces[i]}.png`;
+        newimg.addEventListener("click", () => {
+            if (choice.value !== null)
+                gain(i);
+            else
+                choice.value = i;
         });
     }
 }
-// set console function
-// button
-document.getElementById("send_to_red").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "string") {
-            spawnToRed(choice.value);
-        }
-        else
-            sendToRed(choice.value);
-    }
-});
-document.getElementById("send_to_black").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "string") {
-            spawnToBlack(choice.value);
-        }
-        else
-            sendToBlack(choice.value);
-    }
-});
-document.getElementById("send_to_rest").addEventListener("click", (event) => {
-    if (choice.value !== null) {
-        if (typeof choice.value === "number") {
-            sendToRest(choice.value);
-        }
-        else {
-            console.log("called in vain");
+function loadPieceList() {
+    for (let i = 0; i < 4; i++) {
+        const tr_img = document.getElementById(`pl${i}`);
+        const tr_num = document.getElementById(`pl${i + 4}`);
+        for (let j = 0; j < 7; j++) {
+            const num = i * 7 + j;
+            // fill blank cells
+            const newtd_img = document.createElement("td");
+            tr_img.appendChild(newtd_img);
+            newtd_img.id = `${piece_names[num]}_img`;
+            newtd_img.className = "piece_img";
+            const newtd_num = document.createElement("td");
+            tr_num.appendChild(newtd_num);
+            newtd_num.id = `${piece_names[num]}_num`;
+            newtd_num.className = "piece_num";
+            if (num < 21)
+                fillPieceCell(num);
         }
     }
-});
-// checkbox
-document.getElementById("red_tam_checkbox").addEventListener("change", () => {
-    if (document.getElementById("red_tam_checkbox").checked)
-        generateRedTam();
-    else
-        drainRedTam();
-});
-document.getElementById("mun_checkbox").addEventListener("change", () => {
-    if (document.getElementById("mun_checkbox").checked) {
-        generateBlackMun();
-        generateRedMun();
-    }
-    else {
-        drainBlackMun();
-        drainRedMun();
-    }
-});
-document.getElementById("saup_checkbox").addEventListener("change", () => {
-    if (document.getElementById("saup_checkbox").checked) {
-        generateBlackSaup();
-        generateRedSaup();
-    }
-    else {
-        drainBlackSaup();
-        drainRedSaup();
-    }
-});
-document.getElementById("hia_checkbox").addEventListener("change", () => {
-    if (document.getElementById("hia_checkbox").checked) {
-        generateBlackHia();
-        generateRedHia();
-    }
-    else {
-        drainBlackHia();
-        drainRedHia();
-    }
-});
-// load rest
-for (let i = 0; i < piece_names.length; i++) {
-    const rest = document.getElementById("rest");
-    const newdiv = document.createElement("div");
-    rest.appendChild(newdiv);
-    newdiv.id = piece_names[i];
 }
-// load pieces
-for (let i = 0; i < pieces.length; i++) {
-    const newimg = document.createElement("img");
-    document.getElementById(pieces[i]).appendChild(newimg);
-    newimg.className = "piece";
-    newimg.id = `${i}`;
-    newimg.src = `./pieces/${pieces[i]}.png`;
-    newimg.addEventListener("click", () => {
-        if (choice.value !== null)
-            gain(i);
-        else
-            choice.value = i;
+function setButtonFunction() {
+    document.getElementById("send_to_red").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "string") {
+                spawnToRed(choice.value);
+            }
+            else
+                sendToRed(choice.value);
+        }
+    });
+    document.getElementById("send_to_black").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "string") {
+                spawnToBlack(choice.value);
+            }
+            else
+                sendToBlack(choice.value);
+        }
+    });
+    document.getElementById("send_to_rest").addEventListener("click", (event) => {
+        if (choice.value !== null) {
+            if (typeof choice.value === "number") {
+                sendToRest(choice.value);
+            }
+            else {
+                console.log("called in vain");
+            }
+        }
     });
 }
-// load piece list
-const piece_list = document.getElementById("piece_list");
-for (let i = 0; i < 4; i++) {
-    const tr_img = document.getElementById(`pl${i}`);
-    const tr_num = document.getElementById(`pl${i + 4}`);
-    for (let j = 0; j < 7; j++) {
-        const num = i * 7 + j;
-        // fill blank cells
-        const newtd_img = document.createElement("td");
-        tr_img.appendChild(newtd_img);
-        newtd_img.id = `${piece_names[num]}_img`;
-        newtd_img.className = "piece_img";
-        const newtd_num = document.createElement("td");
-        tr_num.appendChild(newtd_num);
-        newtd_num.id = `${piece_names[num]}_num`;
-        newtd_num.className = "piece_num"; //*/
-        if (num < 21)
-            fillPieceCell(num);
-    }
+function setCheckboxFuntion() {
+    document.getElementById("red_tam_checkbox").addEventListener("change", () => {
+        if (document.getElementById("red_tam_checkbox").checked)
+            generateRedTam();
+        else
+            drainRedTam();
+    });
+    document.getElementById("mun_checkbox").addEventListener("change", () => {
+        if (document.getElementById("mun_checkbox").checked) {
+            generateBlackMun();
+            generateRedMun();
+        }
+        else {
+            drainBlackMun();
+            drainRedMun();
+        }
+    });
+    document.getElementById("saup_checkbox").addEventListener("change", () => {
+        if (document.getElementById("saup_checkbox").checked) {
+            generateBlackSaup();
+            generateRedSaup();
+        }
+        else {
+            drainBlackSaup();
+            drainRedSaup();
+        }
+    });
+    document.getElementById("hia_checkbox").addEventListener("change", () => {
+        if (document.getElementById("hia_checkbox").checked) {
+            generateBlackHia();
+            generateRedHia();
+        }
+        else {
+            drainBlackHia();
+            drainRedHia();
+        }
+    });
 }
-function fillPieceCell(num) {
-    // load img cells
+function fillPieceCell(num) { loadPieceImgCell(num); loadPieceNumCell(num); }
+function drainPieceCell(num) { drainPieceImgCell(num); drainPieceNumCell(num); }
+function loadPieceImgCell(num) {
     const td_img = document.getElementById(`${piece_names[num]}_img`);
     const inner_img = document.createElement("img");
     inner_img.src = `./pieces/${piece_names[num]}.png`;
@@ -445,14 +462,15 @@ function fillPieceCell(num) {
     });
     td_img.innerHTML = "";
     td_img.appendChild(inner_img);
-    // load num cells
+}
+function loadPieceNumCell(num) {
     piece_counts[piece_names[num]].count = document.getElementById(piece_names[num]).children.length;
 }
-function drainPieceCell(num) {
-    // drain img cells
+function drainPieceImgCell(num) {
     const td_img = document.getElementById(`${piece_names[num]}_img`);
     td_img.innerHTML = "";
-    // drain num cells
+}
+function drainPieceNumCell(num) {
     const td_num = document.getElementById(`${piece_names[num]}_num`);
     td_num.innerHTML = "";
 }
