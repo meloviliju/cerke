@@ -1,26 +1,38 @@
 "use strict";
 
-type PieceImgName = "bkua" | "bmaun" | "bkaun" | "buai" | "rio" | "ruai" | "rkaun" | "rmaun" | "rkua" |
-    "rtuk" | "rgua" | "rdau" | "bdau" | "bgua" | "btuk" |
-    "bkauk" | "rkauk" | "bkauk" | "rkauk" | "rnuak" | "rkauk" | "bkauk" | "rkauk" | "bkauk" |
-    "btam" |
-    "bkauk" | "rkauk" | "bkauk" | "rkauk" | "bnuak" | "rkauk" | "bkauk" | "rkauk" | "bkauk" |
-    "btuk" | "bgua" | "bdau" | "rdau" | "rgua" | "rtuk" |
-    "rkua" | "rmaun" | "rkaun" | "ruai" | "bio" | "buai" | "bkaun" | "bmaun" | "bkua" |
-    "rtam" | "bmun" | "bmun" | "bmun" | "rmun" | "rmun" | "rmun" |
-    "bsaup" | "bsaup" | "rsaup" | "rsaup" | "bhia" | "bhia" | "rhia" | "rhia";
+type PieceImgName = 
+    "bnuak" | "rnuak" |
+    "bkauk" | "rkauk" |
+    "bgua"  | "rgua"  |
+    "bkaun" | "rkaun" |
+    "bdau"  | "rdau"  |
+    "bmaun" | "rmaun" |
+    "bkua"  | "rkua"  |
+    "btuk"  | "rtuk"  |
+    "buai"  | "ruai"  |
+    "bio"   | "rio"   |
+    "btam"  | "rtam"  |
+    "bmun"  | "rmun"  |
+    "bsaup" | "rsaup" |
+    "bhia"  | "rhia";
 
-const initial_coord_yhuap = [
-    "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
-    "KE", "LE", "TE", "XE", "ME", "PE",
-    "KI", "LI", "NI", "TI", "ZI", "XI", "CI", "MI", "PI",
-    "ZO",
-    "KAI", "LAI", "NAI", "TAI", "ZAI", "XAI", "CAI", "MAI", "PAI",
-    "KAU", "LAU", "TAU", "XAU", "MAU", "PAU",
-    "KIA", "LIA", "NIA", "TIA", "ZIA", "XIA", "CIA", "MIA", "PIA",
-];
+type PlayerColor = "red" | "black";
+type Column = "K" | "L" | "N" | "T" | "Z" | "X" | "C" | "M" | "P";
+type Row = "A" | "E" | "I" | "U" | "O" | "Y" | "AI" | "AU" | "IA";
+
+type Coordinate = 
+    "KA"  | "LA"  | "NA"  | "TA"  | "ZA"  | "XA"  | "CA"  | "MA"  | "PA"  |
+    "KE"  | "LE"  | "NE"  | "TE"  | "ZE"  | "XE"  | "CE"  | "ME"  | "PE"  |
+    "KI"  | "LI"  | "NI"  | "TI"  | "ZI"  | "XI"  | "CI"  | "MI"  | "PI"  |
+    "KU"  | "LU"  | "NU"  | "TU"  | "ZU"  | "XU"  | "CU"  | "MU"  | "PU"  |
+    "KO"  | "LO"  | "NO"  | "TO"  | "ZO"  | "XO"  | "CO"  | "MO"  | "PO"  |
+    "KY"  | "LY"  | "NY"  | "TY"  | "ZY"  | "XY"  | "CY"  | "MY"  | "PY"  |
+    "KAI" | "LAI" | "NAI" | "TAI" | "ZAI" | "XAI" | "CAI" | "MAI" | "PAI" |
+    "KAU" | "LAU" | "NAU" | "TAU" | "ZAU" | "XAU" | "CAU" | "MAU" | "PAU" |
+    "KIA" | "LIA" | "NIA" | "TIA" | "ZIA" | "XIA" | "CIA" | "MIA" | "PIA";
 
 const pieces: ReadonlyArray<PieceImgName> = [
+    // used in yhuap
     "bkua", "bmaun", "bkaun", "buai", "rio", "ruai", "rkaun", "rmaun", "rkua",
     "rtuk", "rgua", "rdau", "bdau", "bgua", "btuk",
     "bkauk", "rkauk", "bkauk", "rkauk", "rnuak", "rkauk", "bkauk", "rkauk", "bkauk",
@@ -28,6 +40,7 @@ const pieces: ReadonlyArray<PieceImgName> = [
     "bkauk", "rkauk", "bkauk", "rkauk", "bnuak", "rkauk", "bkauk", "rkauk", "bkauk",
     "btuk", "bgua", "bdau", "rdau", "rgua", "rtuk",
     "rkua", "rmaun", "rkaun", "ruai", "bio", "buai", "bkaun", "bmaun", "bkua",
+    // not used in yhuap
     "rtam", "bmun", "bmun", "bmun", "rmun", "rmun", "rmun",
     "bsaup", "bsaup", "rsaup", "rsaup", "bhia", "bhia", "rhia", "rhia"
 ];
@@ -177,7 +190,7 @@ function rotate() {
     console.log("rotate");
 }
 
-function sendTo(dest: "red" | "black" | PieceImgName, piece_id: number) {
+function sendTo(dest: PlayerColor | PieceImgName, piece_id: number) {
     const destination = document.getElementById(dest);
     const piece = getNth(piece_id);
     if (null == piece) { console.log("NPE"); return; }
@@ -209,28 +222,22 @@ function sendToRest(piece_id: number) {
     console.log("rest");
 }
 
-function spawnTo(dest: "black" | "red", piece_id: ChoiceInnerHTMLType) {
+function spawnTo(dest: PlayerColor | Coordinate, piece_img_name: PieceImgName) {
     const destination = document.getElementById(dest);
-    const piece = document.getElementById(piece_id).firstChild;
+    const piece = document.getElementById(piece_img_name).firstChild;
+
+    if (null == piece) { console.log("NPE"); return; }
+
+    if (dest === "red") { (piece as HTMLImageElement).classList.add("reverse"); }
+
     piece.parentNode.removeChild(piece);
     destination.appendChild(piece);
+    piece_counts[piece_img_name].count -= 1;
     choice.value = null;
 }
 
-function spawnToBlack(piece_img_name: PieceImgName) {
-    const piece = document.getElementById(piece_img_name).firstChild;
-    if (null == piece) { console.log("NPE"); return; }
-    else piece_counts[piece_img_name].count -= 1;
-    spawnTo("black", piece_img_name);
-}
-
-function spawnToRed(piece_img_name: PieceImgName) {
-    const piece = document.getElementById(piece_img_name).firstChild;
-    if (null == piece) { console.log("NPE"); return; }
-    else piece_counts[piece_img_name].count -= 1;
-    (piece as HTMLImageElement).classList.add("reverse");
-    spawnTo("red", piece_img_name);
-}
+function spawnToBlack(piece_img_name: PieceImgName) { spawnTo("black", piece_img_name); }
+function spawnToRed(piece_img_name: PieceImgName) { spawnTo("red", piece_img_name); }
 
 function ciurl() {
     let rand = 0;
@@ -239,60 +246,49 @@ function ciurl() {
 }
 
 function init_yhuap() {
+    const initial_coord_yhuap: ReadonlyArray<Coordinate> = [
+        "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
+        "KE", "LE", "TE", "XE", "ME", "PE",
+        "KI", "LI", "NI", "TI", "ZI", "XI", "CI", "MI", "PI",
+        "ZO",
+        "KAI", "LAI", "NAI", "TAI", "ZAI", "XAI", "CAI", "MAI", "PAI",
+        "KAU", "LAU", "TAU", "XAU", "MAU", "PAU",
+        "KIA", "LIA", "NIA", "TIA", "ZIA", "XIA", "CIA", "MIA", "PIA",
+    ];
+
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
-        const piece = document.getElementById(`${i}`);
-        piece.parentNode.removeChild(piece);
-        document.getElementById(initial_coord_yhuap[i]).appendChild(piece);
+        spawnTo(initial_coord_yhuap[i], pieces[i])
+
+        const piece = getNth(i);
         if (i < 24) piece.classList.add("reverse");
         else piece.classList.remove("reverse");
-    }
-    for (let i = 0; i < initial_coord_yhuap.length; i++) {
-        piece_counts[pieces[i]].count = 0;
+        choice.value = null;
     }
     console.log("init yhuap");
 }
 
 function init_sia() {
+    const initial_coord_sia: ReadonlyArray<Coordinate> = [
+        "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
+        "KI", "LI", "NI", "TI", "ZI", "XI", "CI", "MI", "PI",
+        "KAI", "LAI", "NAI", "TAI", "ZAI", "XAI", "CAI", "MAI", "PAI",
+        "KIA", "LIA", "NIA", "TIA", "ZIA", "XIA", "CIA", "MIA", "PIA",
+    ];
+    const pieces_sia: ReadonlyArray<PieceImgName> = [
+        "bgua", "bsaup", "bkaun", "buai", "bio", "buai", "bkaun", "bsaup", "bgua",
+        "bkauk", "bkauk", "bkauk", "bkauk", "bnuak", "bkauk", "bkauk", "bkauk", "bkauk", 
+        "rkauk", "rkauk", "rkauk", "rkauk", "rnuak", "rkauk", "rkauk", "rkauk", "rkauk", 
+        "rgua", "rsaup", "rkaun", "ruai", "rio", "ruai", "rkaun", "rsaup", "rgua"
+    ];
+
     generateBlackSaup();
     generateRedSaup();
-    const piece_id_differing_in_sia = [
-        0, 1, 2, 3, 7, 8,
-        9, 10, 11, 12, 13, 14,
-        15, 17, 21, 23,
-        24,
-        26, 28, 30, 32,
-        34, 35, 36, 37, 38, 39,
-        40, 41, 42, 43, 47, 48,
-        56, 57, 58, 59
-    ];
-    const differing_pieces_dest = [
-        "unused", "unused", "NIA", "TIA", "unused", "unused",
-        "unused", "KA", "unused", "unused", "KIA", "unused",
-        "LAI", "TAI", "XAI", "MAI",
-        "unused",
-        "KI", "NI", "CI", "PI",
-        "unused", "PIA", "unused", "unused", "PA", "unused",
-        "unused", "unused", "NA", "TA", "unused", "unused",
-        "LIA", "MIA", "LA", "MA"
-    ]
-    for (let i = 0; i < initial_coord_yhuap.length; i++) {
-        const piece = getNth(i);
-        piece.parentNode.removeChild(piece);
-        document.getElementById(initial_coord_yhuap[i]).appendChild(piece);
-    }
-    for (let i = 0; i < initial_coord_yhuap.length; i++) {
-        piece_counts[pieces[i]].count = 0;
-    }
-    for (let i = 0; i < piece_id_differing_in_sia.length; i++) {
-        const id = piece_id_differing_in_sia[i];
-        const dest = differing_pieces_dest[i];
-        if (dest === "unused") {
-            sendToRest(id);
-        } else {
-            const piece = getNth(id);
-            piece.parentNode.removeChild(piece);
-            document.getElementById(differing_pieces_dest[i]).appendChild(piece);
-        }
+    (document.getElementById('saup_checkbox') as HTMLInputElement).checked = true;
+
+    for (let i = 0; i < initial_coord_sia.length; i++) {
+        const piece = pieces_sia[i];
+        const dest = initial_coord_sia[i];
+        spawnTo(dest, piece);
     }
     console.log("init sia");
 }
@@ -300,9 +296,6 @@ function init_sia() {
 function cancelChoice() {
     choice.value = null;
 }
-
-type Column = "K" | "L" | "N" | "T" | "Z" | "X" | "C" | "M" | "P";
-type Row = "A" | "E" | "I" | "U" | "O" | "Y" | "AI" | "AU" | "IA";
 
 function setup() { setupMaterials(); setupConsole(); }
 
@@ -336,15 +329,14 @@ function loadBoard() {
                 if ((event.target as HTMLElement).tagName !== "IMG" && choice.value !== null) {
                     if (typeof choice.value === "string") {
                         const piece = choice.piece_element().firstChild;
-                        if (null == piece) { console.log("NPE"); return; }
-
-                        piece.parentNode.removeChild(piece);
-                        newtd.appendChild(piece);
-                        piece_counts[choice.value].count -= 1;
-                        choice.value = null;
-                        console.log("spawn");
-
-                    } else move(newtd);
+                        if (null == piece) { console.log("EMPTY"); return; }
+                        else {
+                            spawnTo(newid as Coordinate, choice.value);
+                            console.log("spawn");
+                        }
+                    } else {
+                        move(newtd);
+                    }
                 }
             });
         }
