@@ -1,32 +1,32 @@
 "use strict";
 
-type PieceImgName = 
+type PieceImgName =
     "bnuak" | "rnuak" |
     "bkauk" | "rkauk" |
-    "bgua"  | "rgua"  |
+    "bgua" | "rgua" |
     "bkaun" | "rkaun" |
-    "bdau"  | "rdau"  |
+    "bdau" | "rdau" |
     "bmaun" | "rmaun" |
-    "bkua"  | "rkua"  |
-    "btuk"  | "rtuk"  |
-    "buai"  | "ruai"  |
-    "bio"   | "rio"   |
-    "btam"  | "rtam"  |
-    "bmun"  | "rmun"  |
+    "bkua" | "rkua" |
+    "btuk" | "rtuk" |
+    "buai" | "ruai" |
+    "bio" | "rio" |
+    "btam" | "rtam" |
+    "bmun" | "rmun" |
     "bsaup" | "rsaup" |
-    "bhia"  | "rhia";
+    "bhia" | "rhia";
 
 type PlayerColor = "red" | "black";
 type Column = "K" | "L" | "N" | "T" | "Z" | "X" | "C" | "M" | "P";
 type Row = "A" | "E" | "I" | "U" | "O" | "Y" | "AI" | "AU" | "IA";
 
-type Coordinate = 
-    "KA"  | "LA"  | "NA"  | "TA"  | "ZA"  | "XA"  | "CA"  | "MA"  | "PA"  |
-    "KE"  | "LE"  | "NE"  | "TE"  | "ZE"  | "XE"  | "CE"  | "ME"  | "PE"  |
-    "KI"  | "LI"  | "NI"  | "TI"  | "ZI"  | "XI"  | "CI"  | "MI"  | "PI"  |
-    "KU"  | "LU"  | "NU"  | "TU"  | "ZU"  | "XU"  | "CU"  | "MU"  | "PU"  |
-    "KO"  | "LO"  | "NO"  | "TO"  | "ZO"  | "XO"  | "CO"  | "MO"  | "PO"  |
-    "KY"  | "LY"  | "NY"  | "TY"  | "ZY"  | "XY"  | "CY"  | "MY"  | "PY"  |
+type Coordinate =
+    "KA" | "LA" | "NA" | "TA" | "ZA" | "XA" | "CA" | "MA" | "PA" |
+    "KE" | "LE" | "NE" | "TE" | "ZE" | "XE" | "CE" | "ME" | "PE" |
+    "KI" | "LI" | "NI" | "TI" | "ZI" | "XI" | "CI" | "MI" | "PI" |
+    "KU" | "LU" | "NU" | "TU" | "ZU" | "XU" | "CU" | "MU" | "PU" |
+    "KO" | "LO" | "NO" | "TO" | "ZO" | "XO" | "CO" | "MO" | "PO" |
+    "KY" | "LY" | "NY" | "TY" | "ZY" | "XY" | "CY" | "MY" | "PY" |
     "KAI" | "LAI" | "NAI" | "TAI" | "ZAI" | "XAI" | "CAI" | "MAI" | "PAI" |
     "KAU" | "LAU" | "NAU" | "TAU" | "ZAU" | "XAU" | "CAU" | "MAU" | "PAU" |
     "KIA" | "LIA" | "NIA" | "TIA" | "ZIA" | "XIA" | "CIA" | "MIA" | "PIA";
@@ -245,6 +245,13 @@ function ciurl() {
     alert(rand);
 }
 
+function resetBoard() {
+    for (let i = 0; i < pieces.length; i++) {
+        if ((getNth(i).parentNode as HTMLElement).classList.contains("rest")) {}
+        else { sendToRest(i); }
+    }
+}
+
 function init_yhuap() {
     const initial_coord_yhuap: ReadonlyArray<Coordinate> = [
         "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
@@ -255,6 +262,8 @@ function init_yhuap() {
         "KAU", "LAU", "TAU", "XAU", "MAU", "PAU",
         "KIA", "LIA", "NIA", "TIA", "ZIA", "XIA", "CIA", "MIA", "PIA",
     ];
+
+    resetBoard();
 
     for (let i = 0; i < initial_coord_yhuap.length; i++) {
         spawnTo(initial_coord_yhuap[i], pieces[i])
@@ -276,14 +285,16 @@ function init_sia() {
     ];
     const pieces_sia: ReadonlyArray<PieceImgName> = [
         "bgua", "bsaup", "bkaun", "buai", "bio", "buai", "bkaun", "bsaup", "bgua",
-        "bkauk", "bkauk", "bkauk", "bkauk", "bnuak", "bkauk", "bkauk", "bkauk", "bkauk", 
-        "rkauk", "rkauk", "rkauk", "rkauk", "rnuak", "rkauk", "rkauk", "rkauk", "rkauk", 
+        "bkauk", "bkauk", "bkauk", "bkauk", "bnuak", "bkauk", "bkauk", "bkauk", "bkauk",
+        "rkauk", "rkauk", "rkauk", "rkauk", "rnuak", "rkauk", "rkauk", "rkauk", "rkauk",
         "rgua", "rsaup", "rkaun", "ruai", "rio", "ruai", "rkaun", "rsaup", "rgua"
     ];
 
     generateBlackSaup();
     generateRedSaup();
     (document.getElementById('saup_checkbox') as HTMLInputElement).checked = true;
+
+    resetBoard();
 
     for (let i = 0; i < initial_coord_sia.length; i++) {
         const piece = pieces_sia[i];
@@ -300,7 +311,7 @@ function cancelChoice() {
 function setup() { setupMaterials(); setupConsole(); }
 
 function setupMaterials() { loadBoard(); loadRestArea(); loadPieces(); loadPieceList(); }
-function setupConsole() { setButtonFunction(); setCheckboxFuntion(); }
+function setupConsole() { setButtonFunction(); setCheckboxFuntion(); setKeyShortcut(); }
 
 function loadBoard() {
     const column: ReadonlyArray<Column> = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
@@ -358,6 +369,7 @@ function loadRestArea() {
         const newdiv = document.createElement("div");
         rest.appendChild(newdiv);
         newdiv.id = piece_names[i];
+        newdiv.classList.add("rest");
     }
 }
 
@@ -392,7 +404,7 @@ function loadPieceList() {
             newtd_num.className = "piece_num";
             if (num < 21) fillPieceCell(num);
         }
-    }    
+    }
 }
 
 function setButtonFunction() {
@@ -417,7 +429,7 @@ function setButtonFunction() {
             if (typeof choice.value === "number") {
                 sendToRest(choice.value);
             } else {
-                console.log("called in vain");
+                console.log("rest to rest");
             }
         }
     });
@@ -443,6 +455,19 @@ function setCheckboxFuntion() {
         if ((document.getElementById("hia_checkbox") as HTMLInputElement).checked) { generateBlackHia(); generateRedHia(); }
         else { drainBlackHia(); drainRedHia(); }
     });
+}
+
+function setKeyShortcut() {
+    document.addEventListener("keydown", (event) => {
+        switch (event.key) {
+            case "Escape": cancelChoice(); break;
+            case "c": cancelChoice(); break;
+            case "r": rotate(); break;
+            case "q": if (typeof choice.value === "number") { sendToRed(choice.value); } break;
+            case "z": if (typeof choice.value === "number") { sendToBlack(choice.value); } break;
+            case "y": if (window.confirm('官定の初期配置に並べます、よろしいですか？')) { init_yhuap(); } break;
+        }
+    })
 }
 
 function fillPieceCell(num: number) { loadPieceImgCell(num); loadPieceNumCell(num); }
