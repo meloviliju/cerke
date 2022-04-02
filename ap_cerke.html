@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>ap_cerke</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=360, initial-scale=1" />
+    <link rel="stylesheet" href="ap_cerke.css">
+    <script src="./src/cerke_board.js" defer></script>
+    <script src="./src/ap_cerke.js" defer></script>
+</head>
+
+<body onLoad="setup_ap()">
+    <div id="playarea">
+        <div class="handspace handspace_horz" id="up"></div>
+        <div id="middle_playarea">
+            <div class="handspace_vert" id="left"></div>
+            <table id="board"></table>
+            <div class="handspace_vert" id="right"></div>
+        </div>
+        <div class="handspace handspace_horz" id="down"></div>
+    </div>
+    <div id="environment">
+        <table id="piece_list">
+            <tr id="pl0"></tr><tr id="pl4"></tr>
+            <tr id="pl1"></tr><tr id="pl5"></tr>
+            <tr id="pl2"></tr><tr id="pl6"></tr>
+            <tr id="pl3"></tr><tr id="pl7"></tr>
+        </table>
+        <p id="choice"></p>
+        <div id="console">
+            <input type="submit" id="send_to_up" value="&#x21E7" />
+            <input type="submit" id="send_to_right" value="&#x21E8" />
+            <input type="submit" id="send_to_down" value="&#x21E9" />
+            <input type="submit" id="send_to_left" value="&#x21E6" />
+            <br>
+            <input type="submit" id="rotate_clockwise" value="&#x21BB" onclick="rotateClockwise_ap();" />
+            <input type="submit" id="rotate_anticlockwise" value="&#x21BA" onclick="rotateAntiClockwise_ap();" />
+            <br>
+            <input type="submit" id="send_to_rest" value="to rest" />
+            <input type="submit" id="cancel" value="cancel" onclick="cancelChoice()" />
+            <input type="submit" id="ciurl" value="ciurl" onclick="ciurl()" />
+            <br>
+            <br>
+            <input type="submit" id="ap" value="ap"
+                onclick="if (window.confirm('四人机戦の初期配置に並べます、よろしいですか？')) { init_ap(); }" />
+        </div>
+        <div id="rest"></div>
+    </div>
+</body>
+
+</html>

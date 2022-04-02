@@ -224,11 +224,11 @@ function sendToRest(piece_id: number) {
 
 function spawnTo(dest: PlayerColor | Coordinate, piece_img_name: PieceImgName) {
     const destination = document.getElementById(dest);
-    const piece = document.getElementById(piece_img_name).firstChild;
+    const piece = document.getElementById(piece_img_name).firstChild  as HTMLImageElement;
 
     if (null == piece) { console.log("NPE"); return; }
 
-    if (dest === "red") { (piece as HTMLImageElement).classList.add("reverse"); }
+    if (dest === "red") { piece.classList.add("reverse"); }
 
     piece.parentNode.removeChild(piece);
     destination.appendChild(piece);
@@ -308,12 +308,32 @@ function cancelChoice() {
     choice.value = null;
 }
 
+const tdClickCallbackFunction = (newtd: HTMLTableCellElement, newid: string) => () => {
+    if ((event.target as HTMLElement).tagName !== "IMG" && choice.value !== null) {
+        if (typeof choice.value === "string") {
+            const piece = choice.piece_element().firstChild;
+            if (null == piece) { console.log("EMPTY"); return; }
+            else {
+                spawnTo(newid as Coordinate, choice.value);
+                console.log("spawn");
+            }
+        } else {
+            move(newtd);
+        }
+    }
+};
+
+const pieceClickCallbackFunction = (piece_num: number) => () => {
+    if (choice.value !== null) gain(piece_num);
+    else choice.value = piece_num;
+};
+
 function setup() { setupMaterials(); setupConsole(); }
 
-function setupMaterials() { loadBoard(); loadRestArea(); loadPieces(); loadPieceList(); }
+function setupMaterials() { loadBoard(tdClickCallbackFunction); loadRestArea(); loadPieces(pieceClickCallbackFunction); loadPieceList(); }
 function setupConsole() { setButtonFunction(); setCheckboxFuntion(); setKeyShortcut(); }
 
-function loadBoard() {
+function loadBoard(tdClickCallbackFunction: (newtd: HTMLTableCellElement, newid: string) => () => void) {
     const column: ReadonlyArray<Column> = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
     const row: ReadonlyArray<Row> = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
     const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
@@ -335,21 +355,7 @@ function loadBoard() {
             } else if (newid === "ZO") {
                 newtd.classList.add("tanzo");
             }
-
-            newtd.addEventListener("click", (event) => {
-                if ((event.target as HTMLElement).tagName !== "IMG" && choice.value !== null) {
-                    if (typeof choice.value === "string") {
-                        const piece = choice.piece_element().firstChild;
-                        if (null == piece) { console.log("EMPTY"); return; }
-                        else {
-                            spawnTo(newid as Coordinate, choice.value);
-                            console.log("spawn");
-                        }
-                    } else {
-                        move(newtd);
-                    }
-                }
-            });
+            newtd.addEventListener("click", tdClickCallbackFunction(newtd, newid));
         }
         const newtd = newtr.insertCell(-1);
         newtd.classList.add("coordinate");
@@ -373,17 +379,14 @@ function loadRestArea() {
     }
 }
 
-function loadPieces() {
+function loadPieces(pieceClickCallbackFunction: (piece_num: number) => () => void) {
     for (let i = 0; i < pieces.length; i++) {
         const newimg = document.createElement("img");
         document.getElementById(pieces[i]).appendChild(newimg);
         newimg.className = "piece";
         newimg.id = `${i}`;
         newimg.src = `./pieces/${pieces[i]}.png`;
-        newimg.addEventListener("click", () => {
-            if (choice.value !== null) gain(i);
-            else choice.value = i;
-        });
+        newimg.addEventListener("click", pieceClickCallbackFunction(i));
     }
 }
 
@@ -461,10 +464,10 @@ function setKeyShortcut() {
     document.addEventListener("keydown", (event) => {
         switch (event.key) {
             case "Escape": cancelChoice(); break;
-            case "c": cancelChoice(); break;
             case "r": rotate(); break;
-            case "q": if (typeof choice.value === "number") { sendToRed(choice.value); } break;
-            case "z": if (typeof choice.value === "number") { sendToBlack(choice.value); } break;
+            case "f": if (typeof choice.value === "number") { sendToRest(choice.value); } break;
+            case "w": if (typeof choice.value === "number") { sendToRed(choice.value); } break;
+            case "s": if (typeof choice.value === "number") { sendToBlack(choice.value); } break;
             case "y": if (window.confirm('官定の初期配置に並べます、よろしいですか？')) { init_yhuap(); } break;
         }
     })

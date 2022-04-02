@@ -258,10 +258,34 @@ function init_sia() {
 function cancelChoice() {
     choice.value = null;
 }
+const tdClickCallbackFunction = (newtd, newid) => () => {
+    if (event.target.tagName !== "IMG" && choice.value !== null) {
+        if (typeof choice.value === "string") {
+            const piece = choice.piece_element().firstChild;
+            if (null == piece) {
+                console.log("EMPTY");
+                return;
+            }
+            else {
+                spawnTo(newid, choice.value);
+                console.log("spawn");
+            }
+        }
+        else {
+            move(newtd);
+        }
+    }
+};
+const pieceClickCallbackFunction = (piece_num) => () => {
+    if (choice.value !== null)
+        gain(piece_num);
+    else
+        choice.value = piece_num;
+};
 function setup() { setupMaterials(); setupConsole(); }
-function setupMaterials() { loadBoard(); loadRestArea(); loadPieces(); loadPieceList(); }
+function setupMaterials() { loadBoard(tdClickCallbackFunction); loadRestArea(); loadPieces(pieceClickCallbackFunction); loadPieceList(); }
 function setupConsole() { setButtonFunction(); setCheckboxFuntion(); setKeyShortcut(); }
-function loadBoard() {
+function loadBoard(tdClickCallbackFunction) {
     const column = ["K", "L", "N", "T", "Z", "X", "C", "M", "P"];
     const row = ["A", "E", "I", "U", "O", "Y", "AI", "AU", "IA"];
     const tanna = ["ZI", "ZU", "NO", "TO", "XO", "CO", "ZY", "ZAI"];
@@ -283,24 +307,7 @@ function loadBoard() {
             else if (newid === "ZO") {
                 newtd.classList.add("tanzo");
             }
-            newtd.addEventListener("click", (event) => {
-                if (event.target.tagName !== "IMG" && choice.value !== null) {
-                    if (typeof choice.value === "string") {
-                        const piece = choice.piece_element().firstChild;
-                        if (null == piece) {
-                            console.log("EMPTY");
-                            return;
-                        }
-                        else {
-                            spawnTo(newid, choice.value);
-                            console.log("spawn");
-                        }
-                    }
-                    else {
-                        move(newtd);
-                    }
-                }
-            });
+            newtd.addEventListener("click", tdClickCallbackFunction(newtd, newid));
         }
         const newtd = newtr.insertCell(-1);
         newtd.classList.add("coordinate");
@@ -322,19 +329,14 @@ function loadRestArea() {
         newdiv.classList.add("rest");
     }
 }
-function loadPieces() {
+function loadPieces(pieceClickCallbackFunction) {
     for (let i = 0; i < pieces.length; i++) {
         const newimg = document.createElement("img");
         document.getElementById(pieces[i]).appendChild(newimg);
         newimg.className = "piece";
         newimg.id = `${i}`;
         newimg.src = `./pieces/${pieces[i]}.png`;
-        newimg.addEventListener("click", () => {
-            if (choice.value !== null)
-                gain(i);
-            else
-                choice.value = i;
-        });
+        newimg.addEventListener("click", pieceClickCallbackFunction(i));
     }
 }
 function loadPieceList() {
@@ -431,18 +433,20 @@ function setKeyShortcut() {
             case "Escape":
                 cancelChoice();
                 break;
-            case "c":
-                cancelChoice();
-                break;
             case "r":
                 rotate();
                 break;
-            case "q":
+            case "f":
+                if (typeof choice.value === "number") {
+                    sendToRest(choice.value);
+                }
+                break;
+            case "w":
                 if (typeof choice.value === "number") {
                     sendToRed(choice.value);
                 }
                 break;
-            case "z":
+            case "s":
                 if (typeof choice.value === "number") {
                     sendToBlack(choice.value);
                 }
