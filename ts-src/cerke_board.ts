@@ -400,7 +400,6 @@ function loadPieceList() {
             const newtd_img = document.createElement("td");
             tr_img.appendChild(newtd_img);
             newtd_img.id = `${piece_names[num]}_img`;
-            newtd_img.className = "piece_img";
             const newtd_num = document.createElement("td");
             tr_num.appendChild(newtd_num);
             newtd_num.id = `${piece_names[num]}_num`;
@@ -481,8 +480,7 @@ function loadPieceImgCell(num: number) {
 
     const inner_img = document.createElement("img");
     inner_img.src = `./pieces/${piece_names[num]}.png`;
-    inner_img.height = 50;
-    inner_img.width = 50;
+    inner_img.className = 'piece_img';
     const new_val = piece_names[num];
     inner_img.addEventListener("click", () => {
         choice.value = new_val;

@@ -24,23 +24,24 @@
         </table>
         <p id="choice"></p>
         <div id="console">
-            <input type="submit" id="send_to_black" value="to black" />
-            <input type="submit" id="send_to_red" value="to red" />
-            <input type="submit" id="send_to_rest" value="to rest" />
-            <br>
-            <input type="submit" id="rotate" value="rotate" onclick="rotate();" />
-            <input type="submit" id="cancel" value="cancel" onclick="cancelChoice()" />
-            <input type="submit" id="ciurl" value="ciurl" onclick="ciurl()" />
-            <br>
-            <br>
-            <input type="submit" id="yhuap" value="yhuap"
-                onclick="if (window.confirm('官定の初期配置に並べます、よろしいですか？')) { init_yhuap(); }" />
-            <input type="submit" id="sia" value="sia"
-                onclick="if (window.confirm('古机戦の初期配置に並べます、よろしいですか？')) { init_sia(); }" />
-            <input type="checkbox" id="red_tam_checkbox" name="red_tam"><label for="red_tam_checkbox">red tam</label>
-            <input type="checkbox" id="mun_checkbox" name="mun"><label for="mun_checkbox">mun</label>
-            <input type="checkbox" id="saup_checkbox" name="saup"><label for="saup_checkbox">saup</label>
-            <input type="checkbox" id="hia_checkbox" name="hia"><label for="hia_checkbox">hia</label>
+            <div id="inputs">
+                <input type="submit" id="send_to_black" value="to black" />
+                <input type="submit" id="send_to_red" value="to red" />
+                <input type="submit" id="send_to_rest" value="to rest" />
+                <input type="submit" id="rotate" value="rotate" onclick="rotate();" />
+                <input type="submit" id="cancel" value="cancel" onclick="cancelChoice()" />
+                <input type="submit" id="ciurl" value="ciurl" onclick="ciurl()" />
+                <input type="submit" id="yhuap" value="yhuap"
+                    onclick="if (window.confirm('官定の初期配置に並べます、よろしいですか？')) { init_yhuap(); }" />
+                <input type="submit" id="sia" value="sia"
+                    onclick="if (window.confirm('古机戦の初期配置に並べます、よろしいですか？')) { init_sia(); }" />
+            </div>
+            <div>
+                <input type="checkbox" id="red_tam_checkbox" name="red_tam"><label for="red_tam_checkbox">red tam</label>
+                <input type="checkbox" id="mun_checkbox" name="mun"><label for="mun_checkbox">mun</label>
+                <input type="checkbox" id="saup_checkbox" name="saup"><label for="saup_checkbox">saup</label>
+                <input type="checkbox" id="hia_checkbox" name="hia"><label for="hia_checkbox">hia</label>
+            </div>
         </div>
         <div id="rest"></div>
     </div>
