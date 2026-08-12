@@ -232,6 +232,7 @@ function init_yhuap() {
     console.log("init yhuap");
 }
 function init_sia() {
+    var _a;
     const initial_coord_sia = [
         "KA", "LA", "NA", "TA", "ZA", "XA", "CA", "MA", "PA",
         "KI", "LI", "NI", "TI", "ZI", "XI", "CI", "MI", "PI",
@@ -244,6 +245,12 @@ function init_sia() {
         "rkauk", "rkauk", "rkauk", "rkauk", "rnuak", "rkauk", "rkauk", "rkauk", "rkauk",
         "rgua", "rsaup", "rkaun", "ruai", "rio", "ruai", "rkaun", "rsaup", "rgua"
     ];
+    const pieces_index = [
+        13, 56, 2, 3, 44, 45, 46, 57, 35,
+        15, 17, 21, 23, 29, 25, 27, 31, 33,
+        16, 18, 20, 22, 19, 26, 28, 30, 32,
+        10, 58, 6, 5, 4, 43, 42, 59, 38
+    ];
     generateBlackSaup();
     generateRedSaup();
     document.getElementById('saup_checkbox').checked = true;
@@ -252,6 +259,8 @@ function init_sia() {
         const piece = pieces_sia[i];
         const dest = initial_coord_sia[i];
         spawnTo(dest, piece);
+        if (i < 18)
+            (_a = getNth(pieces_index[i])) === null || _a === void 0 ? void 0 : _a.classList.add('reverse');
     }
     console.log("init sia");
 }
